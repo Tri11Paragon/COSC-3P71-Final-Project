@@ -23,29 +23,39 @@ public class Pawn extends ChessPiece {
     @Override
     public ArrayList<Move> getMoves() {
         ArrayList<Move> moves = new ArrayList<Move>();
-        moves.add(new Move(x, y + 1));
-        if (isFirstMove)
-            moves.add(new Move(x, y + 2));
+        if (isWhite) {
+            moves.add(new Move(x, y + 1));
+            if (isFirstMove)
+                moves.add(new Move(x, y + 2));
+        } else {
+            moves.add(new Move(x, y - 1));
+            if (isFirstMove)
+                moves.add(new Move(x, y - 2));
+        }
         ChessPiece neighbour = null;
 
         if (isWhite){
             // En passant
-            if ((neighbour = b.get(x-1, y)) != null && neighbour instanceof Pawn && ((Pawn) neighbour).isFirstMove())
+            if ((neighbour = b.get(x-1, y)) != null && checkNeighbourEnPassant(neighbour))
                 moves.add(new Move(x-1, y + 1, Move.SpecialConditions.leftEnPassant));
             // En passant
-            if ((neighbour = b.get(x+1, y)) != null && neighbour instanceof Pawn && ((Pawn) neighbour).isFirstMove())
+            if ((neighbour = b.get(x+1, y)) != null && checkNeighbourEnPassant(neighbour))
                 moves.add(new Move(x+1, + 1, Move.SpecialConditions.rightEnPassant));
         } else {
             // unfortunately have to flip the direction depending on player type
             // En passant
-            if ((neighbour = b.get(x-1, y)) != null && neighbour instanceof Pawn && ((Pawn) neighbour).isFirstMove())
+            if ((neighbour = b.get(x-1, y)) != null && checkNeighbourEnPassant(neighbour))
                 moves.add(new Move(x-1, y - 1, Move.SpecialConditions.leftEnPassant));
             // En passant
-            if ((neighbour = b.get(x+1, y)) != null && neighbour instanceof Pawn && ((Pawn) neighbour).isFirstMove())
+            if ((neighbour = b.get(x+1, y)) != null && checkNeighbourEnPassant(neighbour))
                 moves.add(new Move(x+1, - 1, Move.SpecialConditions.rightEnPassant));
         }
 
         return moves;
+    }
+
+    private boolean checkNeighbourEnPassant(ChessPiece neighbour){
+        return neighbour instanceof Pawn && ((Pawn) neighbour).isFirstMove() && neighbour.isWhite != this.isWhite;
     }
 
     @Override
