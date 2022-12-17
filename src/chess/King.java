@@ -1,11 +1,23 @@
 package chess;
 
+import java.awt.*;
 import java.util.ArrayList;
+
+import static ui.Display.loadImage;
 
 public class King extends ChessPiece {
 
+    private Image whiteKing = loadImage("./resources/chess_piece_2_black_king.png");
+    private Image blackKing = loadImage("./resources/chess_piece_2_white_king.png");
+
     public King(Board b, boolean isWhite, int x, int y) {
         super(b,isWhite,x,y);
+    }
+
+    public Image getImage(){
+        if (isWhite)
+            return whiteKing;
+        return blackKing;
     }
 
     @Override

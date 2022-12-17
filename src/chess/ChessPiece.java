@@ -1,5 +1,6 @@
 package chess;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public abstract class ChessPiece {
@@ -33,6 +34,7 @@ public abstract class ChessPiece {
     }
 
     public abstract ArrayList<Move> getMoves();
+    public abstract Image getImage();
     public void applySpecialMove(Move moveWithSpecial){}
 
     protected ArrayList<Move> getCardinalMoves(int length){

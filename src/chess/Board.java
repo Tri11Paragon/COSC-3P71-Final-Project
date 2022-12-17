@@ -23,14 +23,14 @@ public class Board {
         board[size()-4][0] = new King(this, true, size() - 4, 0);
 
         // black
-        board[0][0] = new Rook(this, false,0, 0);
-        board[size()-1][0] = new Rook(this, false, size() - 1, 0);
-        board[1][0] = new Knight(this, false, 1, 0);
-        board[size()-2][0] = new Knight(this, false, size() - 2, 0);
-        board[2][0] = new Bishop(this, false, 2, 0);
-        board[size()-3][0] = new Bishop(this, false, size() - 3, 0);
-        board[3][0] = new Queen(this, false, 3, 0);
-        board[size()-4][0] = new King(this, false, size() - 4, 0);
+        board[0][size()-1] = new Rook(this, false,0, 0);
+        board[size()-1][size()-1] = new Rook(this, false, size() - 1, 0);
+        board[1][size()-1] = new Knight(this, false, 1, 0);
+        board[size()-2][size()-1] = new Knight(this, false, size() - 2, 0);
+        board[2][size()-1] = new Bishop(this, false, 2, 0);
+        board[size()-3][size()-1] = new Bishop(this, false, size() - 3, 0);
+        board[3][size()-1] = new Queen(this, false, 3, 0);
+        board[size()-4][size()-1] = new King(this, false, size() - 4, 0);
     }
 
     public boolean movePiece(int x, int y, int newX, int newY){
