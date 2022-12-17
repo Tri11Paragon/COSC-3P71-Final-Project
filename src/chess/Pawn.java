@@ -4,14 +4,8 @@ import java.util.ArrayList;
 
 public class Pawn extends ChessPiece {
 
-    private final boolean isFirstMove = true;
-
     public Pawn(Board b, boolean isWhite, int x, int y) {
         super(b,isWhite,x,y);
-    }
-
-    public boolean isFirstMove(){
-        return isFirstMove;
     }
 
     @Override
@@ -21,12 +15,47 @@ public class Pawn extends ChessPiece {
         if (isFirstMove)
             moves.add(new Move(x, y + 2));
         ChessPiece neighbour = null;
-        // En passant
-        if ((neighbour = b.get(x-1, y)) != null && neighbour instanceof Pawn && ((Pawn) neighbour).isFirstMove())
-            moves.add(new Move(x-1, 1, true));
-        // En passant
-        if ((neighbour = b.get(x+1, y)) != null && neighbour instanceof Pawn && ((Pawn) neighbour).isFirstMove())
-            moves.add(new Move(x+1, 1, true));
+
+        if (isWhite){
+            // En passant
+            if ((neighbour = b.get(x-1, y)) != null && neighbour instanceof Pawn && ((Pawn) neighbour).isFirstMove())
+                moves.add(new Move(x-1, y + 1, Move.SpecialConditions.leftEnPassant));
+            // En passant
+            if ((neighbour = b.get(x+1, y)) != null && neighbour instanceof Pawn && ((Pawn) neighbour).isFirstMove())
+                moves.add(new Move(x+1, + 1, Move.SpecialConditions.rightEnPassant));
+        } else {
+            // unfortunately have to flip the direction depending on player type
+            // En passant
+            if ((neighbour = b.get(x-1, y)) != null && neighbour instanceof Pawn && ((Pawn) neighbour).isFirstMove())
+                moves.add(new Move(x-1, y - 1, Move.SpecialConditions.leftEnPassant));
+            // En passant
+            if ((neighbour = b.get(x+1, y)) != null && neighbour instanceof Pawn && ((Pawn) neighbour).isFirstMove())
+                moves.add(new Move(x+1, - 1, Move.SpecialConditions.rightEnPassant));
+        }
+
         return moves;
+    }
+
+    @Override
+    public void applySpecialMove(Move moveWithSpecial){
+        var specialCondition = moveWithSpecial.getSpecialCondition();
+        if(specialCondition == Move.SpecialConditions.leftEnPassant)
+            enPassantLeft();
+        else if (specialCondition == Move.SpecialConditions.rightEnPassant)
+            enPassantRight();
+    }
+
+    private void enPassantLeft(){
+        if (isWhite)
+            b.set(x-1, y, null);
+        else
+            b.set(x+1, y, null);
+    }
+
+    private void enPassantRight(){
+        if (isWhite)
+            b.set(x+1, y, null);
+        else
+            b.set(x-1, y, null);
     }
 }

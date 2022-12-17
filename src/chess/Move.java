@@ -4,18 +4,22 @@ import java.util.ArrayList;
 
 public class Move {
 
+    enum SpecialConditions {
+        none, leftEnPassant, rightEnPassant, leftCastle, rightCastle
+    }
+
     private final int x,y;
-    private final boolean enPassant;
+    private final SpecialConditions specialCondition;
 
     public Move(int x, int y){
         this.x = x;
         this.y = y;
-        enPassant = false;
+        specialCondition = SpecialConditions.none;
     }
-    public Move(int x, int y, boolean enPassant){
+    public Move(int x, int y, SpecialConditions specialCondition){
         this.x = x;
         this.y = y;
-        this.enPassant = enPassant;
+        this.specialCondition = specialCondition;
     }
 
     public int getX() {
@@ -26,7 +30,7 @@ public class Move {
         return y;
     }
 
-    public boolean isEnPassant(){
-        return enPassant;
+    public SpecialConditions getSpecialCondition(){
+        return specialCondition;
     }
 }

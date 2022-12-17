@@ -7,6 +7,7 @@ public abstract class ChessPiece {
     protected Board b;
     protected int x, y;
     protected boolean isInDanger, isWhite;
+    protected boolean isFirstMove = true;
 
     public ChessPiece(Board b, boolean isWhite, int x, int y) {
         this.b = b;
@@ -23,7 +24,16 @@ public abstract class ChessPiece {
         return isWhite;
     }
 
+    public boolean isFirstMove(){
+        return isFirstMove;
+    }
+
+    public void setMoved(){
+        isFirstMove = false;
+    }
+
     public abstract ArrayList<Move> getMoves();
+    public void applySpecialMove(Move moveWithSpecial){}
 
     protected ArrayList<Move> getCardinalMoves(int length){
         ArrayList<Move> moves = new ArrayList<Move>();

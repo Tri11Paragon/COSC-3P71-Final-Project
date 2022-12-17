@@ -33,12 +33,55 @@ public class Board {
         board[size()-4][0] = new King(this, false, size() - 4, 0);
     }
 
+    public boolean movePiece(int x, int y, int newX, int newY){
+        ChessPiece selectedPiece;
+        // make sure the place we are moving from has a piece
+        if ((selectedPiece = get(x, y)) == null)
+            return false;
+        var moves = selectedPiece.getMoves();
+        for (Move m : moves){
+            // reject the moves that don't correspond to where we want to move to.
+            if (m.getX() != newX || m.getY() != newY)
+                continue;
+            ChessPiece movedPiece = get(m);
+            // make sure they are of the same color. Since we know this move is the position we want to move to
+            // we can early exit because we are not allowed to move on top of our own pieces
+            if (selectedPiece.isWhite == movedPiece.isWhite)
+                return false;
+            // if we were unable to set the piece down we failed to move the piece
+            if (!set(m, selectedPiece))
+                return false;
+            // run special conditions. Only matters for pieces which have special conditions, since is defaulted to empty body.
+            selectedPiece.applySpecialMove(m);
+            set(x, y, null);
+            return true;
+        }
+        return false;
+    }
+
+    public ChessPiece get(Move m){
+        return get(m.getX(), m.getY());
+    }
+
     public ChessPiece get(int x, int y){
         if (x < 0 || x > board.length)
             return null;
         if (y < 0 || y > board.length)
             return null;
         return board[x][y];
+    }
+
+    public boolean set(Move m, ChessPiece piece) {
+        return set(m.getX(), m.getY(), piece);
+    }
+
+    protected boolean set(int x, int y, ChessPiece piece){
+        if (x < 0 || x > board.length)
+            return false;
+        if (y < 0 || y > board.length)
+            return false;
+        board[x][y] = piece;
+        return true;
     }
 
     public int size(){
