@@ -48,6 +48,20 @@ public class Display extends JFrame implements MouseListener {
                 for (Move m : moves) {
                     drawSelectionRect(g, m);
                 }
+                if (selectionPointX != -1 && selectionPointY != -1) {
+                    int localPointX = (selectionPointX - xOffset) / width;
+                    int localPointY = (b.size() - 1) - ((selectionPointY - yOffset) / height);
+                    for (Move m : moves){
+                        if (m.getX() == localPointX && m.getY() == localPointY){
+                            b.movePiece(piece.getPosition(), new Move(localPointX, localPointY));
+                            selectionPointX = -1;
+                            selectionPointY = -1;
+                            movingPointX = -1;
+                            movingPointY = -1;
+                            return;
+                        }
+                    }
+                }
             }
         }
         // handle user input (mouse clicking)
@@ -59,7 +73,6 @@ public class Display extends JFrame implements MouseListener {
                 movingPointX = localPointX;
                 movingPointY = localPointY;
             }
-            System.out.println(localPointX + " " + localPointY);
             selectionPointY = -1;
             selectionPointX = -1;
         }

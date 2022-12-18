@@ -24,6 +24,9 @@ public abstract class ChessPiece {
     public boolean isWhite(){
         return isWhite;
     }
+    public Move getPosition(){
+        return new Move(x, y);
+    }
 
     public boolean isFirstMove(){
         return isFirstMove;

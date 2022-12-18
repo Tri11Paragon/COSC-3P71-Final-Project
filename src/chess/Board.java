@@ -33,7 +33,12 @@ public class Board {
         board[size()-4][size()-1] = new King(this, false, size() - 4, size()-1);
     }
 
+    public boolean movePiece(Move movingPiece, Move newPos){
+        return movePiece(movingPiece.getX(), movingPiece.getY(), newPos.getX(), newPos.getY());
+    }
+
     public boolean movePiece(int x, int y, int newX, int newY){
+        System.out.println(x + " " + y + " || " + newX + " " + newY);
         ChessPiece selectedPiece;
         // make sure the place we are moving from has a piece
         if ((selectedPiece = get(x, y)) == null)
@@ -46,13 +51,14 @@ public class Board {
             ChessPiece movedPiece = get(m);
             // make sure they are of the same color. Since we know this move is the position we want to move to
             // we can early exit because we are not allowed to move on top of our own pieces
-            if (selectedPiece.isWhite == movedPiece.isWhite)
+            if (movedPiece != null && selectedPiece.isWhite == movedPiece.isWhite)
                 return false;
             // if we were unable to set the piece down we failed to move the piece
             if (!set(m, selectedPiece))
                 return false;
             // run special conditions. Only matters for pieces which have special conditions, since is defaulted to empty body.
-            selectedPiece.applySpecialMove(m);
+            if (movedPiece != null)
+                selectedPiece.applySpecialMove(m);
             set(x, y, null);
             return true;
         }
