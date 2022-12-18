@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 public class Pawn extends ChessPiece {
 
-    private Image white = Display.loadImage("./resources/chess_piece_2_black_pawn.png");
-    private Image black = Display.loadImage("./resources/chess_piece_2_white_pawn.png");
+    private Image white = Display.loadImage("./resources/chess_piece_2_white_pawn.png");
+    private Image black = Display.loadImage("./resources/chess_piece_2_black_pawn.png");
 
     public Pawn(Board b, boolean isWhite, int x, int y) {
         super(b,isWhite,x,y);

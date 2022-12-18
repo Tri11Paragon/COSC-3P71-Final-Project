@@ -7,8 +7,8 @@ import static ui.Display.loadImage;
 
 public class King extends ChessPiece {
 
-    private final Image whiteKing = loadImage("./resources/chess_piece_2_black_king.png");
-    private final Image blackKing = loadImage("./resources/chess_piece_2_white_king.png");
+    private final Image whiteKing = loadImage("./resources/chess_piece_2_white_king.png");
+    private final Image blackKing = loadImage("./resources/chess_piece_2_black_king.png");
 
     public King(Board b, boolean isWhite, int x, int y) {
         super(b,isWhite,x,y);
