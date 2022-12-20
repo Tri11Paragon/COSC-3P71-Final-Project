@@ -11,23 +11,24 @@ public class Main {
     public static void main(String[] args) {
         Board mainBoard = new Board();
 
-        int maxDepth = 2;
+        int maxDepth = 5;
         Board[] bestStates = new Board[maxDepth];
 
-        minMax(mainBoard,bestStates,maxDepth,true);
+        alphaBeta(mainBoard,bestStates,maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE,true);
 
         System.out.println("Ai Done Computing");
         
-        int counter = 0;
+
 
         // mainBoard.getMoves();
 
         // display stuff //
         Display display = new Display(mainBoard);
+        int counter = 0;
         long frames = 0;
         long lastTime = System.currentTimeMillis();
         long frameTime = System.currentTimeMillis();
-        while(display.update(mainBoard)){
+        while(display.update(bestStates[counter%(maxDepth+1)])){
             display.repaint();
             // limit usage of system resources by slowing the speed down to 60 fps.
             while ((System.currentTimeMillis() - frameTime) < 64f){
@@ -47,25 +48,49 @@ public class Main {
                 TimeUnit.SECONDS.sleep(1);
             } catch (Exception ignored) {}
 
-            mainBoard = bestStates[counter%maxDepth];
-
             counter++;
 
         }
+
         System.out.println("Hello world!");
 
 
     }
 
-    /*
-    public int alphaBeta (Board position, int depth, int alpha, int beta, boolean maximizing) {
-        if (depth == 0 || position.kingInDanger) return Board.evaluate(position);
+    public static int alphaBeta (Board position, Board[] bestStates, int depth, int alpha, int beta, boolean maximizing) {
+        if (depth == 0) {
+            bestStates[depth] = position;
+            return position.evaluate();
+        }
+
+        System.out.println(depth);
 
         if (maximizing) {
             int maxEval = Integer.MIN_VALUE;
-            position.
+            for (Board state: position.getMoves(maximizing) ) {
+                int eval = alphaBeta(state,bestStates,depth-1, alpha,beta,false);
+                maxEval = Math.max(maxEval,eval);
+                alpha = Math.max(alpha,eval);
+                if (beta <= alpha) {
+                    break;
+                }
+            }
+            bestStates[depth-1] = position;
+            return maxEval;
+        } else {
+            int minEval = Integer.MAX_VALUE;
+            for (Board state: position.getMoves(maximizing) ) {
+                int eval = alphaBeta(state,bestStates,depth-1,alpha,beta,true);
+                minEval = Math.min(minEval,eval);
+                beta = Math.min(beta,eval);
+                if (beta <= alpha) {
+                    break;
+                }
+            }
+            bestStates[depth-1] = position;
+            return minEval;
         }
-    } */
+    }
 
     public static int minMax (Board position, Board[] bestStates, int depth, boolean maximizing) {
         if (depth == 0) {
