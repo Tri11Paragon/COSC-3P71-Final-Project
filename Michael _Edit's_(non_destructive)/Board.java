@@ -40,7 +40,6 @@ public class Board {
     }
 
     public boolean movePiece(int x, int y, int newX, int newY){
-        // System.out.println(x + " " + y + " || " + newX + " " + newY);
         ChessPiece selectedPiece;
         // make sure the place we are moving from has a piece
         if ((selectedPiece = get(x, y)) == null)
@@ -83,11 +82,12 @@ public class Board {
                 }
             }
         }
+
         return moveStates;
     }
 
     public int evaluate () { // !!!!!!!! Fix this, add actual heuristic evaluation
-        return (int)Math.random()*900;
+        return (int)(Math.random()*10);
     }
 
     public Board deepCopy () {
