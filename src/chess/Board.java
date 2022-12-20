@@ -2,7 +2,7 @@ package chess;
 
 public class Board {
 
-    enum BoardStatus {
+    public enum BoardStatus {
         None,
         WhiteInCheck,
         BlackInCheck
@@ -45,11 +45,43 @@ public class Board {
     }
 
     public boolean movePiece(int x, int y, int newX, int newY){
-        System.out.println(x + " " + y + " || " + newX + " " + newY);
         ChessPiece selectedPiece;
         // make sure the place we are moving from has a piece
         if ((selectedPiece = get(x, y)) == null)
             return false;
+
+        // check for check
+        if (status != BoardStatus.None){
+            // when the king is in check no piece can move.
+            if (!(selectedPiece instanceof King))
+                return false;
+            if (status == BoardStatus.WhiteInCheck){
+                // don't allow the wrong king to be moved
+                if (!selectedPiece.isWhite)
+                    return false;
+            } else {
+                // don't allow the wrong king to be moved
+                if (selectedPiece.isWhite)
+                    return false;
+            }
+            // prevent moves which are invalid.
+            for (int i = 0; i < board.length; i++){
+                for (int j = 0; j < board.length; j++){
+                    var p = get(i, j);
+                    // make sure that we only check moves on pieces of the opposite color
+                    if (p != null && p.isWhite != selectedPiece.isWhite){
+                        var moves = p.getMoves();
+                        for (Move m : moves){
+                            // don't allow for king to move to pieces which would still put him in danger.
+                            if (m.getX() == newX && m.getY() == newY)
+                                return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        // apply move like normal.
         var moves = selectedPiece.getMoves();
         for (Move m : moves){
             // reject the moves that don't correspond to where we want to move to.
@@ -73,16 +105,11 @@ public class Board {
         return false;
     }
 
+    /**
+     * Updates the danger status of all the pieces. Pieces which are threatened are marked as in danger
+     */
     public void updateDangerStatus(){
-        // reset dangers
-        for (int i = 0; i < board.length; i++){
-            for (int j = 0; j < board.length; j++){
-                var p = get(i, j);
-                if (p != null)
-                    p.setInDanger(false);
-            }
-        }
-        // calculate all the pieces that are in danger now
+        status = BoardStatus.None;
         for (int i = 0; i < board.length; i++){
             for (int j = 0; j < board.length; j++){
                 var p = get(i, j);
@@ -90,19 +117,16 @@ public class Board {
                     var moves = p.getMoves();
                     for (Move m : moves){
                         var pieceInDanger = get(m);
-                        if (pieceInDanger != null)
-                            pieceInDanger.setInDanger(true);
+                        // make sure that the piece isn't on the same team. White cannot endanger white.
+                        if (pieceInDanger != null && pieceInDanger.isWhite != p.isWhite) {
+                            // we only care if the king is in danger.
+                            if (pieceInDanger instanceof King) {
+                                status = pieceInDanger.isWhite() ? BoardStatus.WhiteInCheck : BoardStatus.BlackInCheck;
+                                return;
+                            }
+                        }
                     }
                 }
-            }
-        }
-        // check for check
-        for (int i = 0; i < board.length; i++){
-            for (int j = 0; j < board.length; j++){
-                var p = get(i, j);
-                if (p instanceof King)
-                    if (p.isInDanger)
-                        status = p.isWhite() ? BoardStatus.WhiteInCheck : BoardStatus.BlackInCheck;
             }
         }
     }

@@ -35,6 +35,7 @@ public class Display extends JFrame implements MouseListener {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+        g.drawString(b.getStatus() == Board.BoardStatus.BlackInCheck ? "Black in check" : b.getStatus() == Board.BoardStatus.WhiteInCheck ? "White in check" : "Board Normal", 600, 700);
         for (int i = 0; i < b.size(); i++){
             for (int j = 0; j < b.size(); j++){
                 var p = b.get(i,j);
