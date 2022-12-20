@@ -86,8 +86,47 @@ public class Board {
         return moveStates;
     }
 
-    public int evaluate () { // !!!!!!!! Fix this, add actual heuristic evaluation
-        return (int)(Math.random()*10);
+    public int evaluate () {
+        int materialTotal = 0;
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == null) {continue;}
+                if (King.class.equals(board[i][j].getClass())) {
+                    if (board[i][j].isWhite) {
+                        materialTotal += 900;
+                    } else {
+                        materialTotal -= 900;
+                    }
+                } else if (Queen.class.equals(board[i][j].getClass())) {
+                    if (board[i][j].isWhite) {
+                        materialTotal += 9;
+                    } else {
+                        materialTotal -= 9;
+                    }
+                } else if (Rook.class.equals(board[i][j].getClass())) {
+                    if (board[i][j].isWhite) {
+                        materialTotal += 5;
+                    } else {
+                        materialTotal -= 5;
+                    }
+                } else if (Knight.class.equals(board[i][j].getClass()) || Bishop.class.equals(board[i][j].getClass())) {
+                    if (board[i][j].isWhite) {
+                        materialTotal += 3;
+                    } else {
+                        materialTotal -= 3;
+                    }
+                } else if (Pawn.class.equals(board[i][j].getClass())) {
+                    if (board[i][j].isWhite) {
+                        materialTotal += 1;
+                    } else {
+                        materialTotal -= 1;
+                    }
+                }
+            }
+        }
+
+        return materialTotal;
     }
 
     public Board deepCopy () {
