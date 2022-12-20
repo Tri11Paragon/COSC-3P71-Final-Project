@@ -2,7 +2,14 @@ package chess;
 
 public class Board {
 
+    enum BoardStatus {
+        None,
+        WhiteInCheck,
+        BlackInCheck
+    };
+
     private final ChessPiece[][] board = new ChessPiece[8][8];
+    private BoardStatus status = BoardStatus.None;
 
     /**
      * create a basic chess board in default configuration
@@ -60,9 +67,48 @@ public class Board {
             // run special conditions. Only matters for pieces which have special conditions, since is defaulted to empty body.
             selectedPiece.applySpecialMove(m);
             set(x, y, null);
+            updateDangerStatus();
             return true;
         }
         return false;
+    }
+
+    public void updateDangerStatus(){
+        // reset dangers
+        for (int i = 0; i < board.length; i++){
+            for (int j = 0; j < board.length; j++){
+                var p = get(i, j);
+                if (p != null)
+                    p.setInDanger(false);
+            }
+        }
+        // calculate all the pieces that are in danger now
+        for (int i = 0; i < board.length; i++){
+            for (int j = 0; j < board.length; j++){
+                var p = get(i, j);
+                if (p != null){
+                    var moves = p.getMoves();
+                    for (Move m : moves){
+                        var pieceInDanger = get(m);
+                        if (pieceInDanger != null)
+                            pieceInDanger.setInDanger(true);
+                    }
+                }
+            }
+        }
+        // check for check
+        for (int i = 0; i < board.length; i++){
+            for (int j = 0; j < board.length; j++){
+                var p = get(i, j);
+                if (p instanceof King)
+                    if (p.isInDanger)
+                        status = p.isWhite() ? BoardStatus.WhiteInCheck : BoardStatus.BlackInCheck;
+            }
+        }
+    }
+
+    public BoardStatus getStatus(){
+        return status;
     }
 
     public ChessPiece get(Move m){
