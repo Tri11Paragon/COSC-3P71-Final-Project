@@ -25,10 +25,14 @@ public class Pawn extends ChessPiece {
         ArrayList<Move> moves = new ArrayList<Move>();
         if (isWhite) {
             moves.add(b.checkIfMoveValid(pawnForwardMoveValid(new Move(x, y + 1)), isWhite));
+            moves.add(pawnAttack(new Move(x + 1, y + 1)));
+            moves.add(pawnAttack(new Move(x - 1, y + 1)));
             if (isFirstMove())
                 moves.add(b.checkIfMoveValid(new Move(x, y + 2), isWhite));
         } else {
             moves.add(b.checkIfMoveValid(pawnForwardMoveValid(new Move(x, y - 1)), isWhite));
+            moves.add(pawnAttack(new Move(x + 1, y - 1)));
+            moves.add(pawnAttack(new Move(x - 1, y - 1)));
             if (isFirstMove())
                 moves.add(b.checkIfMoveValid(new Move(x, y - 2), isWhite));
         }
@@ -52,6 +56,12 @@ public class Pawn extends ChessPiece {
         }
 
         return prune(moves);
+    }
+
+    private Move pawnAttack(Move m){
+        if (b.get(m) != null && b.get(m).isWhite != isWhite)
+            return m;
+        return null;
     }
 
     private Move pawnForwardMoveValid(Move m){
