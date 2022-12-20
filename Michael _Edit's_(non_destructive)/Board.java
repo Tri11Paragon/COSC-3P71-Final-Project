@@ -4,7 +4,14 @@ import java.util.ArrayList;
 
 public class Board {
 
+    enum BoardStatus {
+        None,
+        WhiteInCheck,
+        BlackInCheck
+    };
+
     private final ChessPiece[][] board = new ChessPiece[8][8];
+    private BoardStatus status = BoardStatus.None;
 
     /**
      * create a basic chess board in default configuration
@@ -44,8 +51,7 @@ public class Board {
         // make sure the place we are moving from has a piece
         if ((selectedPiece = get(x, y)) == null)
             return false;
-        ArrayList<Move> moves;
-        moves = selectedPiece.getMoves();
+        var moves = selectedPiece.getMoves();
         for (Move m : moves){
             // reject the moves that don't correspond to where we want to move to.
             if (m.getX() != newX || m.getY() != newY)
@@ -58,13 +64,52 @@ public class Board {
             // if we were unable to set the piece down we failed to move the piece
             if (!set(m, selectedPiece))
                 return false;
+            selectedPiece.move(m);
             // run special conditions. Only matters for pieces which have special conditions, since is defaulted to empty body.
-            if (movedPiece != null)
-                selectedPiece.applySpecialMove(m);
+            selectedPiece.applySpecialMove(m);
             set(x, y, null);
+            updateDangerStatus();
             return true;
         }
         return false;
+    }
+
+    public void updateDangerStatus(){
+        // reset dangers
+        for (int i = 0; i < board.length; i++){
+            for (int j = 0; j < board.length; j++){
+                var p = get(i, j);
+                if (p != null)
+                    p.setInDanger(false);
+            }
+        }
+        // calculate all the pieces that are in danger now
+        for (int i = 0; i < board.length; i++){
+            for (int j = 0; j < board.length; j++){
+                var p = get(i, j);
+                if (p != null){
+                    var moves = p.getMoves();
+                    for (Move m : moves){
+                        var pieceInDanger = get(m);
+                        if (pieceInDanger != null)
+                            pieceInDanger.setInDanger(true);
+                    }
+                }
+            }
+        }
+        // check for check
+        for (int i = 0; i < board.length; i++){
+            for (int j = 0; j < board.length; j++){
+                var p = get(i, j);
+                if (p instanceof King)
+                    if (p.isInDanger)
+                        status = p.isWhite() ? BoardStatus.WhiteInCheck : BoardStatus.BlackInCheck;
+            }
+        }
+    }
+
+    public BoardStatus getStatus(){
+        return status;
     }
 
     public ArrayList<Board> getMoves(boolean isWhitesTurn) {
@@ -78,7 +123,7 @@ public class Board {
                 for (Move pieceMove : board[i][j].getMoves()) {
                     curr = deepCopy();
                     curr.movePiece(board[i][j].x,board[i][j].y,pieceMove.getX(),pieceMove.getY());
-                    moveStates.add(deepCopy());
+                    moveStates.add(curr);
                 }
             }
         }
@@ -135,12 +180,12 @@ public class Board {
         for (int i = 0; i < temp.board.length; i++) {
             for (int j = 0; j < temp.board[0].length; j++) {
                 try {
-                    if (this.board[i][j] == null) {
+                    if (board[i][j] == null) {
                         temp.board[i][j] = null;
                         continue;
                     }
 
-                    temp.board[i][j] = this.board[i][j].clone();
+                    temp.board[i][j] = board[i][j].clone();
                 } catch (Exception e) { e.printStackTrace();}
             }
         }
@@ -149,6 +194,8 @@ public class Board {
     }
 
     public ChessPiece get(Move m){
+        if (m == null)
+            return null;
         return get(m.getX(), m.getY());
     }
 
@@ -161,6 +208,8 @@ public class Board {
     }
 
     public boolean set(Move m, ChessPiece piece) {
+        if (m == null)
+            return false;
         return set(m.getX(), m.getY(), piece);
     }
 
@@ -172,6 +221,15 @@ public class Board {
         board[x][y] = piece;
         return true;
     }
+
+    protected Move checkIfMoveValid(Move m, boolean isWhite){
+        if (m == null)
+            return null;
+        if (get(m) != null && get(m).isWhite == isWhite)
+            return null;
+        return m;
+    }
+
 
     public int size(){
         return board.length;

@@ -24,38 +24,55 @@ public class Pawn extends ChessPiece {
     public ArrayList<Move> getMoves() {
         ArrayList<Move> moves = new ArrayList<Move>();
         if (isWhite) {
-            moves.add(new Move(x, y + 1));
-            if (isFirstMove)
-                moves.add(new Move(x, y + 2));
+            moves.add(b.checkIfMoveValid(pawnForwardMoveValid(new Move(x, y + 1)), isWhite));
+            moves.add(pawnAttack(new Move(x + 1, y + 1)));
+            moves.add(pawnAttack(new Move(x - 1, y + 1)));
+            if (isFirstMove())
+                moves.add(b.checkIfMoveValid(new Move(x, y + 2), isWhite));
         } else {
-            moves.add(new Move(x, y - 1));
-            if (isFirstMove)
-                moves.add(new Move(x, y - 2));
+            moves.add(b.checkIfMoveValid(pawnForwardMoveValid(new Move(x, y - 1)), isWhite));
+            moves.add(pawnAttack(new Move(x + 1, y - 1)));
+            moves.add(pawnAttack(new Move(x - 1, y - 1)));
+            if (isFirstMove())
+                moves.add(b.checkIfMoveValid(new Move(x, y - 2), isWhite));
         }
         ChessPiece neighbour = null;
 
         if (isWhite){
             // En passant
             if ((neighbour = b.get(x-1, y)) != null && checkNeighbourEnPassant(neighbour))
-                moves.add(new Move(x-1, y + 1, Move.SpecialConditions.leftEnPassant));
+                moves.add(b.checkIfMoveValid(pawnForwardMoveValid(new Move(x-1, y + 1, Move.SpecialConditions.leftEnPassant)), isWhite));
             // En passant
             if ((neighbour = b.get(x+1, y)) != null && checkNeighbourEnPassant(neighbour))
-                moves.add(new Move(x+1, + 1, Move.SpecialConditions.rightEnPassant));
+                moves.add(b.checkIfMoveValid(pawnForwardMoveValid(new Move(x+1, + 1, Move.SpecialConditions.rightEnPassant)), isWhite));
         } else {
             // unfortunately have to flip the direction depending on player type
             // En passant
             if ((neighbour = b.get(x-1, y)) != null && checkNeighbourEnPassant(neighbour))
-                moves.add(new Move(x-1, y - 1, Move.SpecialConditions.leftEnPassant));
+                moves.add(b.checkIfMoveValid(pawnForwardMoveValid(new Move(x-1, y - 1, Move.SpecialConditions.leftEnPassant)), isWhite));
             // En passant
             if ((neighbour = b.get(x+1, y)) != null && checkNeighbourEnPassant(neighbour))
-                moves.add(new Move(x+1, - 1, Move.SpecialConditions.rightEnPassant));
+                moves.add(b.checkIfMoveValid(pawnForwardMoveValid(new Move(x+1, - 1, Move.SpecialConditions.rightEnPassant)), isWhite));
         }
 
-        return moves;
+        return prune(moves);
+    }
+
+    private Move pawnAttack(Move m){
+        if (b.get(m) != null && b.get(m).isWhite != isWhite)
+            return m;
+        return null;
+    }
+
+    private Move pawnForwardMoveValid(Move m){
+        // basically prevent a pawn from moving into the enemy head on.
+        if (b.get(m) != null)
+            return null;
+        return m;
     }
 
     private boolean checkNeighbourEnPassant(ChessPiece neighbour){
-        return neighbour instanceof Pawn && ((Pawn) neighbour).isFirstMove() && neighbour.isWhite != this.isWhite;
+        return neighbour instanceof Pawn && neighbour.isSecondMove() && neighbour.isWhite != this.isWhite;
     }
 
     @Override
@@ -70,16 +87,16 @@ public class Pawn extends ChessPiece {
 
     private void enPassantLeft(){
         if (isWhite)
-            b.set(x-1, y, null);
+            b.set(x, y-1, null);
         else
-            b.set(x+1, y, null);
+            b.set(x, y+1, null);
     }
 
     private void enPassantRight(){
         if (isWhite)
-            b.set(x+1, y, null);
+            System.out.println(b.set(x, y-1, null));
         else
-            b.set(x-1, y, null);
+            b.set(x, y-1, null);
     }
 
     public Pawn clone () {

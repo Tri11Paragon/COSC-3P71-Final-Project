@@ -23,15 +23,15 @@ public class Knight extends ChessPiece {
     @Override
     public ArrayList<Move> getMoves() {
         ArrayList<Move> moves = new ArrayList<Move>();
-        moves.add(new Move(x + 2, y + 1));
-        moves.add(new Move(x + 2, y - 1));
-        moves.add(new Move(x - 2, y + 1));
-        moves.add(new Move(x - 2, y - 1));
-        moves.add(new Move(x - 1, y - 2));
-        moves.add(new Move(x + 1, y - 2));
-        moves.add(new Move(x - 1, y + 2));
-        moves.add(new Move(x + 1, y + 2));
-        return moves;
+        moves.add(b.checkIfMoveValid(new Move(x + 2, y + 1), isWhite));
+        moves.add(b.checkIfMoveValid(new Move(x + 2, y - 1), isWhite));
+        moves.add(b.checkIfMoveValid(new Move(x - 2, y + 1), isWhite));
+        moves.add(b.checkIfMoveValid(new Move(x - 2, y - 1), isWhite));
+        moves.add(b.checkIfMoveValid(new Move(x - 1, y - 2), isWhite));
+        moves.add(b.checkIfMoveValid(new Move(x + 1, y - 2), isWhite));
+        moves.add(b.checkIfMoveValid(new Move(x - 1, y + 2), isWhite));
+        moves.add(b.checkIfMoveValid(new Move(x + 1, y + 2), isWhite));
+        return prune(moves);
     }
 
     public Knight clone () {

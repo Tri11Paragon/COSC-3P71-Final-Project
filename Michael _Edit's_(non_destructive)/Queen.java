@@ -25,7 +25,7 @@ public class Queen extends ChessPiece {
         ArrayList<Move> moves = new ArrayList<Move>();
         moves.addAll(super.getCardinalMoves(b.size()));
         moves.addAll(super.getDiagonalMoves(b.size()));
-        return moves;
+        return prune(moves);
     }
 
     public Queen clone () {

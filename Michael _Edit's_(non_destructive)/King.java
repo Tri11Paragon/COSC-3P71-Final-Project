@@ -25,22 +25,22 @@ public class King extends ChessPiece {
         ArrayList<Move> moves = new ArrayList<Move>();
         moves.addAll(super.getCardinalMoves(1));
         moves.addAll(super.getDiagonalMoves(1));
-        if (isFirstMove){
+        if (isFirstMove()){
             ChessPiece rook = null;
             // castling
             if (isWhite){
                 if ((rook = b.get(0, 0)) != null && checkIfRookValid(rook))
-                    moves.add(new Move(2, 0, Move.SpecialConditions.leftCastle));
+                    moves.add(b.checkIfMoveValid(new Move(2, 0, Move.SpecialConditions.leftCastle), isWhite));
                 if ((rook = b.get(b.size() - 1, 0)) != null && checkIfRookValid(rook))
-                    moves.add(new Move(b.size() - 2, 0, Move.SpecialConditions.rightCastle));
+                    moves.add(b.checkIfMoveValid(new Move(b.size() - 2, 0, Move.SpecialConditions.rightCastle), isWhite));
             } else {
                 if ((rook = b.get(0, b.size()-1)) != null && checkIfRookValid(rook))
-                    moves.add(new Move(2, b.size()-1, Move.SpecialConditions.leftCastle));
+                    moves.add(b.checkIfMoveValid(new Move(2, b.size()-1, Move.SpecialConditions.leftCastle), isWhite));
                 if ((rook = b.get(b.size() - 1, b.size()-1)) != null && checkIfRookValid(rook))
-                    moves.add(new Move(b.size() - 2, b.size()-1, Move.SpecialConditions.rightCastle));
+                    moves.add(b.checkIfMoveValid(new Move(b.size() - 2, b.size()-1, Move.SpecialConditions.rightCastle), isWhite));
             }
         }
-        return moves;
+        return prune(moves);
     }
 
     @Override
@@ -55,10 +55,19 @@ public class King extends ChessPiece {
 
     private void castleRight(){
         // casting has to move the rook on the right size of the king from white's perspective
-        if (this.isWhite)
-            b.set(b.size()-3, 0, b.get(b.size()-1, 0));
-        else
-            b.set(b.size()-3, b.size()-1, b.get(b.size()-1, b.size()-1));
+        if (this.isWhite) {
+            ChessPiece p;
+            p = b.get(b.size() - 1, 0);
+            p.move(new Move(b.size() - 3, 0));
+            b.set(b.size() - 3, 0, p);
+            b.set(b.size() - 1, 0, null);
+        } else {
+            ChessPiece p;
+            p = b.get(b.size() - 1, b.size() - 1);
+            p.move(new Move(b.size() - 3, b.size() - 1));
+            b.set(b.size() - 3, b.size() - 1, p);
+            b.set(b.size() - 1, b.size() - 1, null);
+        }
     }
 
     private boolean checkIfRookValid(ChessPiece piece){
@@ -66,11 +75,19 @@ public class King extends ChessPiece {
     }
 
     private void castleLeft(){
-        // casting has to move the rook on the left size of the king from white's perspective
-        if (this.isWhite)
-            b.set(3, 0, b.get(0, 0));
-        else
-            b.set(3, b.size()-1, b.get(0, b.size()-1));
+        if (this.isWhite) {
+            ChessPiece p;
+            p = b.get(0, 0);
+            p.move(new Move(3, 0));
+            b.set(3, 0, p);
+            b.set(0, 0, null);
+        } else {
+            ChessPiece p;
+            p = b.get(0, b.size() - 1);
+            p.move(new Move(3, b.size() - 1));
+            b.set(3, b.size() - 1, p);
+            b.set(0, b.size() - 1, null);
+        }
     }
 
     public King clone () {
