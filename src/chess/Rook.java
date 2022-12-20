@@ -20,6 +20,6 @@ public class Rook extends ChessPiece {
 
     @Override
     public ArrayList<Move> getMoves() {
-        return new ArrayList<Move>(super.getCardinalMoves(b.size()));
+        return prune(super.getCardinalMoves(b.size()));
     }
 }

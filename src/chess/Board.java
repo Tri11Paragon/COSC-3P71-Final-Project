@@ -56,9 +56,9 @@ public class Board {
             // if we were unable to set the piece down we failed to move the piece
             if (!set(m, selectedPiece))
                 return false;
+            selectedPiece.move(m);
             // run special conditions. Only matters for pieces which have special conditions, since is defaulted to empty body.
-            if (movedPiece != null)
-                selectedPiece.applySpecialMove(m);
+            selectedPiece.applySpecialMove(m);
             set(x, y, null);
             return true;
         }
@@ -66,6 +66,8 @@ public class Board {
     }
 
     public ChessPiece get(Move m){
+        if (m == null)
+            return null;
         return get(m.getX(), m.getY());
     }
 
@@ -78,16 +80,26 @@ public class Board {
     }
 
     public boolean set(Move m, ChessPiece piece) {
+        if (m == null)
+            return false;
         return set(m.getX(), m.getY(), piece);
     }
 
-    protected boolean set(int x, int y, ChessPiece piece){
+    public boolean set(int x, int y, ChessPiece piece){
         if (x < 0 || x >= board.length)
             return false;
         if (y < 0 || y >= board.length)
             return false;
         board[x][y] = piece;
         return true;
+    }
+
+    protected Move checkIfMoveValid(Move m, boolean isWhite){
+        if (m == null)
+            return null;
+        if (get(m) != null && get(m).isWhite == isWhite)
+            return null;
+        return m;
     }
 
     public int size(){

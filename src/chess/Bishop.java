@@ -22,6 +22,6 @@ public class Bishop extends ChessPiece {
 
     @Override
     public ArrayList<Move> getMoves() {
-        return new ArrayList<Move>(super.getDiagonalMoves(b.size()));
+        return prune(super.getDiagonalMoves(b.size()));
     }
 }
